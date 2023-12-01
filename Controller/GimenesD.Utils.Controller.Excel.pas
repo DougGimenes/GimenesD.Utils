@@ -9,17 +9,7 @@ uses
   ComObj,
   DB,
   DBClient,
-  FireDAC.Stan.Intf,
-  FireDAC.Stan.Option,
-  FireDAC.Stan.Param,
-  FireDAC.Stan.Error,
-  FireDAC.DatS,
-  FireDAC.Phys.Intf,
-  FireDAC.DApt.Intf,
-  FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client,
-  Windows,
-  Data.Win.ADODB;
+  Windows;
 
 type
   TExcel = class
@@ -30,10 +20,9 @@ type
     procedure InicializarExcel();
 
     procedure PrintCabecalho();
-    procedure PrintConteudo(Linha: Integer = 2);
-    procedure PrintCabecalhoCompleto(Titulo, Subtitulo: string);
+    procedure PrintConteudo(ALinha: Integer = 2);
+    procedure PrintCabecalhoCompleto(ATitulo, ASubtitulo: string);
   public
-    constructor Create(); overload;
     constructor Create(AQuery: TDataSet); overload;
     destructor Destroy(); override;
 
@@ -45,10 +34,6 @@ implementation
 {$D+}
 {TExcel}
 
-constructor TExcel.Create;
-begin
-  Self.InicializarExcel();
-end;
 
 constructor TExcel.Create(AQuery: TDataSet);
 begin
@@ -106,12 +91,12 @@ begin
   end;
 end;
 
-procedure TExcel.PrintCabecalhoCompleto(Titulo, Subtitulo: string);
+procedure TExcel.PrintCabecalhoCompleto(ATitulo, ASubtitulo: string);
 var
   I: Integer;
 begin
   Self.Excel.Range['A1:' + Char(Self.DataSet.FieldCount + 64) + '1'].MergeCells := True;
-  Self.Excel.WorkBooks[1].Sheets[1].Cells[1, 1] := Titulo;
+  Self.Excel.WorkBooks[1].Sheets[1].Cells[1, 1] := ATitulo;
   Self.Excel.WorkBooks[1].Sheets[1].Cells[1, 1].Font.Size  := 15;
   Self.Excel.WorkBooks[1].Sheets[1].Cells[1, 1].Font.Bold  := True;
   Self.Excel.WorkBooks[1].Sheets[1].Cells[1, 1].Font.Color := RGB(255, 255, 255);
@@ -119,7 +104,7 @@ begin
   Self.Excel.WorkBooks[1].Sheets[1].Cells[1, 1].HorizontalAlignment := 3;
 
   Self.Excel.Range['A2:' + Char((Self.DataSet.FieldCount - 1) + 64) + '2'].MergeCells := True;
-  Self.Excel.WorkBooks[1].Sheets[1].Cells[2, 1] := Subtitulo;
+  Self.Excel.WorkBooks[1].Sheets[1].Cells[2, 1] := ASubtitulo;
   Self.Excel.WorkBooks[1].Sheets[1].Cells[2, 1].Font.Size := 13;
   Self.Excel.WorkBooks[1].Sheets[1].Cells[2, 1].Font.Bold := True;
   Self.Excel.WorkBooks[1].Sheets[1].Cells[2, 1].HorizontalAlignment := 3;
@@ -139,7 +124,7 @@ begin
   end;
 end;
 
-procedure TExcel.PrintConteudo(Linha: Integer = 2);
+procedure TExcel.PrintConteudo(ALinha: Integer = 2);
 var
   I: Integer;
 begin
@@ -149,17 +134,17 @@ begin
     for I := 0 to Self.DataSet.FieldCount - 1 do
     begin
       if (Self.DataSet.Fields[I].DataType = FtInteger) then
-        Self.Excel.WorkBooks[1].Sheets[1].Cells[Linha, I + 1] := Self.DataSet.Fields[I].AsInteger
+        Self.Excel.WorkBooks[1].Sheets[1].Cells[ALinha, I + 1] := Self.DataSet.Fields[I].AsInteger
       else if (Self.DataSet.Fields[I].DataType = FtFloat) then
-        Self.Excel.WorkBooks[1].Sheets[1].Cells[Linha, I + 1] := Self.DataSet.Fields[I].AsFloat
+        Self.Excel.WorkBooks[1].Sheets[1].Cells[ALinha, I + 1] := Self.DataSet.Fields[I].AsFloat
       else if (Self.DataSet.Fields[I].DataType = FtDateTime) then
-        Self.Excel.WorkBooks[1].Sheets[1].Cells[Linha, I + 1] := 'Data: ' + FormatDateTime('dd/mm/yyyy', Self.DataSet.Fields[I].AsDateTime)
+        Self.Excel.WorkBooks[1].Sheets[1].Cells[ALinha, I + 1] := 'Data: ' + FormatDateTime('dd/mm/yyyy', Self.DataSet.Fields[I].AsDateTime)
       else
-        Self.Excel.WorkBooks[1].Sheets[1].Cells[Linha, I + 1] := Self.DataSet.Fields[I].AsString
+        Self.Excel.WorkBooks[1].Sheets[1].Cells[ALinha, I + 1] := Self.DataSet.Fields[I].AsString
     end;
 
     Self.DataSet.Next();
-    Linha := Linha + 1;
+    ALinha := ALinha + 1;
 
   end;
 
